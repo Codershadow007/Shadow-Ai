@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<title>Shadow AI</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+
+<style>
+
+
+.welcomeScreen{
+position:fixed;
+inset:0;
+background:#020617;
+display:none;
+align-items:center;
+justify-content:center;
+z-index:9999;
+}
+
+.welcomeCard{
+text-align:center;
+padding:60px;
+border-radius:16px;
+background:rgba(255,255,255,0.03);
+border:1px solid rgba(255,255,255,0.1);
+box-shadow:0 0 80px rgba(59,130,246,0.3);
+backdrop-filter:blur(20px);
+}
+
+.aiText{
+font-size:32px;
+color:#60a5fa;
+letter-spacing:4px;
+margin-bottom:20px;
+}
+
+.welcomeMessage{
+font-size:42px;
+font-weight:600;
+color:#22c55e;
+text-shadow:0 0 20px #22c55e;
+margin-bottom:25px;
+}
+
+.subText{
+color:#9ca3af;
+font-size:14px;
+}
+
+.scanBar{
+width:260px;
+height:4px;
+margin:20px auto;
+background:#60a5fa;
+animation:scanBar 2s infinite;
+}
+
+@keyframes scanBar{
+0%{transform:scaleX(0)}
+50%{transform:scaleX(1)}
+100%{transform:scaleX(0)}
+}
+
+*{
+box-sizing:border-box;
+font-family:Inter;
+}
+
+body{
+margin:0;
+height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+background:radial-gradient(circle at top,#0f172a,#020617);
+color:white;
+overflow:hidden;
+}
+
+.glow{
+position:absolute;
+width:700px;
+height:700px;
+background:radial-gradient(circle,#3b82f640,transparent);
+filter:blur(140px);
+}
+
+.container{
+perspective:1000px;
+}
+
+.card{
+width:420px;
+height:430px;
+position:relative;
+transform-style:preserve-3d;
+transition:transform 0.8s;
+}
+
+.card.flip{
+transform:rotateY(180deg);
+}
+
+.side{
+position:absolute;
+width:100%;
+height:100%;
+backface-visibility:hidden;
+padding:45px;
+background:rgba(255,255,255,0.03);
+border-radius:16px;
+border:1px solid rgba(255,255,255,0.08);
+backdrop-filter:blur(14px);
+box-shadow:0 15px 50px rgba(0,0,0,0.7);
+}
+
+.back{
+transform:rotateY(180deg);
+}
+
+.title{
+font-size:32px;
+font-weight:600;
+text-align:center;
+color:#60a5fa;
+text-shadow:0 0 12px rgba(96,165,250,0.4);
+}
+
+.subtitle{
+text-align:center;
+color:#9ca3af;
+font-size:15px;
+margin-bottom:28px;
+}
+
+.input{
+width:100%;
+padding:15px;
+border-radius:10px;
+background:rgba(255,255,255,0.05);
+border:1px solid rgba(255,255,255,0.08);
+color:white;
+margin-bottom:18px;
+font-size:15px;
+}
+
+.input:focus{
+outline:none;
+border:1px solid #60a5fa;
+box-shadow:0 0 12px rgba(96,165,250,0.45);
+}
+
+.btn{
+width:100%;
+padding:15px;
+border-radius:10px;
+border:none;
+font-size:16px;
+font-weight:600;
+color:white;
+background:linear-gradient(135deg,#3b82f6,#2563eb);
+cursor:pointer;
+transition:0.2s;
+margin-top:10px;
+}
+
+.btn:hover{
+transform:translateY(-1px);
+box-shadow:0 10px 25px rgba(37,99,235,0.45);
+}
+
+.switch{
+margin-top:15px;
+text-align:center;
+font-size:13px;
+color:#94a3b8;
+cursor:pointer;
+}
+
+.faceIcon{
+font-size:70px;
+text-align:center;
+margin-top:25px;
+color:#60a5fa;
+text-shadow:0 0 20px #3b82f6;
+}
+
+.faceModal{
+display:none;
+position:fixed;
+inset:0;
+background:black;
+align-items:center;
+justify-content:center;
+flex-direction:column;
+z-index:999;
+}
+
+.video{
+width:520px;
+border-radius:12px;
+border:2px solid #3b82f6;
+box-shadow:0 0 40px rgba(59,130,246,0.7);
+}
+
+canvas{
+position:absolute;
+}
+
+.scanText{
+margin-top:20px;
+font-size:14px;
+color:#9ca3af;
+}
+
+.hud{
+position:absolute;
+width:520px;
+height:390px;
+border:1px solid rgba(59,130,246,0.3);
+pointer-events:none;
+}
+
+.scanLine{
+position:absolute;
+width:520px;
+height:3px;
+background:#60a5fa;
+animation:scan 3s infinite;
+}
+
+@keyframes scan{
+0%{top:0}
+50%{top:380px}
+100%{top:0}
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="glow"></div>
+
+<div class="container">
+
+<div id="card" class="card">
+
+<div class="side front">
+
+<div class="title">Shadow AI</div>
+<div class="subtitle">Secure Access Portal</div>
+
+<form method="POST" action="/login">
+
+<input class="input" name="username" placeholder="Username" required>
+<input class="input" type="password" name="password" placeholder="Password" required>
+
+{% if error %}
+<div style="color:#f87171;text-align:center;margin-bottom:10px">{{ error }}</div>
+{% endif %}
+
+<button class="btn">Login</button>
+
+</form>
+
+<div class="switch" onclick="flip()">Use Face Authentication</div>
+
+</div>
+
+<div class="side back">
+
+<div class="title">Face ID</div>
+
+<div class="faceIcon">◉</div>
+
+<input id="username" class="input" placeholder="Enter username">
+
+<button class="btn" onclick="registerFace()">Register Face</button>
+
+<button class="btn" onclick="faceLogin()">Login with Face</button>
+
+<div class="switch" onclick="flip()">Back to Password</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div id="faceModal" class="faceModal">
+
+<div style="position:relative">
+
+<video id="video" class="video" autoplay playsinline></video>
+<canvas id="overlay"></canvas>
+<div class="hud"></div>
+<div class="scanLine"></div>
+
+</div>
+
+<div class="scanText">Scanning face...</div>
+
+</div>
+
+<script>
+
+let stream
+let scanning=false
+let interval
+
+function flip(){
+document.getElementById("card").classList.toggle("flip")
+}
+
+async function openCamera(){
+
+const modal=document.getElementById("faceModal")
+modal.style.display="flex"
+
+stream=await navigator.mediaDevices.getUserMedia({video:true})
+
+const video=document.getElementById("video")
+video.srcObject=stream
+
+video.onloadedmetadata=()=>{
+startFaceTracking()
+}
+
+}
+
+function closeCamera(){
+
+document.getElementById("faceModal").style.display="none"
+
+if(stream){
+stream.getTracks().forEach(t=>t.stop())
+}
+
+scanning=false
+clearInterval(interval)
+
+}
+
+function capture(){
+
+const video=document.getElementById("video")
+
+const canvas=document.createElement("canvas")
+
+canvas.width=video.videoWidth
+canvas.height=video.videoHeight
+
+const ctx=canvas.getContext("2d")
+
+ctx.drawImage(video,0,0)
+
+return canvas.toDataURL("image/png")
+
+}
+
+async function startFaceTracking(){
+
+await faceapi.nets.tinyFaceDetector.loadFromUri(
+"https://justadudewhohacks.github.io/face-api.js/models"
+)
+
+const video=document.getElementById("video")
+const overlay=document.getElementById("overlay")
+
+overlay.width=video.width
+overlay.height=video.height
+
+const ctx=overlay.getContext("2d")
+
+scanning=true
+
+interval=setInterval(async()=>{
+
+if(!scanning)return
+
+const detection=await faceapi.detectSingleFace(
+video,
+new faceapi.TinyFaceDetectorOptions()
+)
+
+ctx.clearRect(0,0,overlay.width,overlay.height)
+
+if(detection){
+
+const box=detection.box
+
+ctx.strokeStyle="#3b82f6"
+ctx.lineWidth=3
+
+ctx.strokeRect(box.x,box.y,box.width,box.height)
+
+}
+
+},120)
+
+}
+
+function registerFace(){
+
+const username=document.getElementById("username").value
+
+if(!username){
+alert("Enter username first")
+return
+}
+
+openCamera()
+
+setTimeout(()=>{
+
+const img=capture()
+
+fetch("/register_face",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({
+username:username,
+image:img
+})
+})
+
+closeCamera()
+
+alert("Face Registered")
+
+},3000)
+
+}
+
+function faceLogin(){
+
+openCamera()
+
+setTimeout(()=>{
+
+const img=capture()
+
+fetch("/face_login",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({image:img})
+})
+.then(r=>r.json())
+.then(data=>{
+
+closeCamera()
+
+if(data.success){
+
+const screen=document.getElementById("welcomeScreen")
+const msg=document.getElementById("welcomeMessage")
+
+msg.innerText="WELCOME " + data.name.toUpperCase()
+
+screen.style.display="flex"
+
+setTimeout(()=>{
+
+window.location="/"
+
+},2500)
+
+}else{
+
+alert("Face not recognized")
+
+}
+
+})
+
+},3000)
+
+}
+</script>
+<div id="welcomeScreen" class="welcomeScreen">
+
+<div class="welcomeCard">
+
+<div class="aiText">SHADOW AI</div>
+
+<div id="welcomeMessage" class="welcomeMessage"></div>
+
+<div class="scanBar"></div>
+
+<div class="subText">
+Initializing secure session...
+</div>
+
+</div>
+
+</div>
+</body>
+</html>

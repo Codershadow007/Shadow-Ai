@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Shadow AI</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+
+<div class="app">
+
+  <!-- =========================
+       LEFT SIDEBAR
+  ========================== -->
+  <aside class="sidebar">
+
+    <div class="sidebar-header">
+      <h2>Shadow AI</h2>
+      <button id="newChatBtn">+ New Chat</button>
+    </div>
+
+    <div id="chatHistory" class="chat-history">
+      <!-- Sessions load dynamically -->
+    </div>
+
+  </aside>
+
+
+  <!-- =========================
+       MAIN CHAT SECTION
+  ========================== -->
+  <div class="chat-section">
+
+    <!-- HEADER -->
+    <header class="topbar">
+      <div class="title">Shadow Bot</div>
+
+     <div class="topbar-right">
+  <span id="modeIndicator" class="mode-indicator">
+    Mode: 💬 Chat
+  </span>
+
+  <button id="themeToggle" class="theme-toggle">🌙</button>
+  <button id="clearBtn">Clear</button>
+</div>
+    </header>
+
+    <!-- CHAT AREA -->
+    <main id="chat" class="chat">
+      <!-- Messages injected dynamically -->
+    </main>
+
+
+    <!-- =========================
+         COMPOSER
+    ========================== -->
+    <footer class="composer">
+      <form id="composerForm" autocomplete="off" enctype="multipart/form-data">
+
+        <div class="composer-box">
+
+          <!-- TOOLS TOGGLE -->
+          <div class="tools-wrapper">
+
+            <button type="button" id="toolsToggle" class="icon-btn">
+              +
+            </button>
+
+            <!-- TOOLS DROPDOWN (FIXED STRUCTURE) -->
+           <div id="toolsMenu" class="tools-menu">
+
+  <button type="button" id="searchBtn">
+    <svg viewBox="0 0 24 24" class="icon">
+      <path d="M21 21l-4.35-4.35M10 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16z"
+        stroke="currentColor" stroke-width="2" fill="none"/>
+    </svg>
+    <span>Search</span>
+  </button>
+
+  <button type="button" id="researchBtn">
+    <svg viewBox="0 0 24 24" class="icon">
+      <path d="M12 3v18M3 12h18" stroke="currentColor" stroke-width="2" fill="none"/>
+    </svg>
+    <span>Deep Research</span>
+  </button>
+
+  <button type="button" id="uploadBtn">
+    <svg viewBox="0 0 24 24" class="icon">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"
+        stroke="currentColor" stroke-width="2" fill="none"/>
+      <path d="M7 10l5-5 5 5M12 15V5"
+        stroke="currentColor" stroke-width="2" fill="none"/>
+    </svg>
+    <span>Upload File</span>
+  </button>
+
+  <hr>
+
+  <button type="button" id="toolDns">
+    <svg viewBox="0 0 24 24" class="icon">
+      <circle cx="12" cy="12" r="9"
+        stroke="currentColor" stroke-width="2" fill="none"/>
+      <path d="M3 12h18M12 3a15 15 0 0 1 0 18"
+        stroke="currentColor" stroke-width="2" fill="none"/>
+    </svg>
+    <span>DNS Lookup</span>
+  </button>
+
+  <button type="button" id="toolIp">
+    <svg viewBox="0 0 24 24" class="icon">
+      <rect x="3" y="5" width="18" height="14"
+        stroke="currentColor" stroke-width="2" fill="none"/>
+    </svg>
+    <span>IP Lookup</span>
+  </button>
+
+  <button type="button" id="toolScan">
+    <svg viewBox="0 0 24 24" class="icon">
+      <path d="M4 4h6M4 4v6M20 20h-6M20 20v-6"
+        stroke="currentColor" stroke-width="2" fill="none"/>
+    </svg>
+    <span>Port Scan</span>
+  </button>
+
+  <button type="button" id="toolGraph">
+    <svg viewBox="0 0 24 24" class="icon">
+      <polyline points="3 17 9 11 13 15 21 7"
+        stroke="currentColor" stroke-width="2" fill="none"/>
+    </svg>
+    <span>Generate Graph</span>
+  </button>
+
+</div>
+
+          </div>
+
+          <!-- INPUT (TEXTAREA FOR AUTO EXPAND) -->
+          <textarea
+            id="messageInput"
+            rows="1"
+            placeholder="Ask Shadow..."
+          ></textarea>
+
+          <button type="button" onclick="startVoice()" class="icon-btn voice-btn">
+  🎤
+</button>
+
+
+          <!-- STOP -->
+          <button type="button" id="stopBtn" class="icon-btn stop-btn">
+            ■
+          </button>
+
+          <!-- SEND -->
+          <button type="submit" class="icon-btn send-btn">
+            ↑
+          </button>
+
+        </div>
+
+        <!-- HIDDEN FILE INPUT -->
+        <input
+          type="file"
+          id="fileInput"
+          accept=".pdf,.txt"
+          hidden
+        />
+
+      </form>
+    </footer>
+
+  </div>
+
+</div>
+
+<!-- Markdown -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<!-- Your JS -->
+<script src="/static/app.js?v=30"></script>
+
+</body>
+</html>
